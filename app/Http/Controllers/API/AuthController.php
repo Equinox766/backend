@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\SaveLoginRequest;
+use App\Http\Requests\StoreRegisterRequest;
 
 class AuthController extends Controller
 {
@@ -15,12 +17,8 @@ class AuthController extends Controller
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
-    public function login(Request $request)
+    public function login(SaveLoginRequest $request)
     {
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
         $credentials = $request->only('email', 'password');
         $token = Auth::attempt($credentials);
 
@@ -40,13 +38,8 @@ class AuthController extends Controller
         ]);
     }
 
-    public function register(Request $request)
+    public function register(StoreRegisterRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
-        ]);
 
         $user = User::create([
             'name' => $request->name,
