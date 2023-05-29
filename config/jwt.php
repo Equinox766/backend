@@ -89,7 +89,7 @@ return [
     |
     */
 
-    'ttl' => env('JWT_TTL', 60*60*24), //genera un token de 24 horas!
+    'ttl' => env('JWT_TTL', 60*24), // 60*60*24genera un token de 24 horas!
 
     /*
     |--------------------------------------------------------------------------
