@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Testing\Fluent\Concerns\Has;
 
 class ChatRoom extends Model
 {
@@ -55,5 +56,39 @@ class ChatRoom extends Model
     public function Chat(): HasMany
     {
         return $this->hasMany(Chat::class, 'chat_room_id');
+    }
+
+    public function getLastMessageAttribute()
+    {
+        $chat = $this->Chat()
+            ->sortByDesc('id')
+            ->first();
+
+        return $chat ?
+            $chat->message ?
+                $chat->message : 'Archivo Enviado' :
+            NULL;
+    }
+    public function getLastMessageUserAttribute()
+    {
+        $chat = $this->Chat()
+            ->sortByDesc('id')
+            ->first();
+        return $chat ? $chat->from_user_id : NULL;
+    }
+    public function getLastTimeCreateAtAttribute()
+    {
+        $chat = $this->Chat()
+            ->sortByDesc('id')
+            ->first();
+        return $chat ? $chat->created_at->diffForHumans() : NULL;
+    }
+
+    public function getCountMessages($user): int
+    {
+        return $this->Chat()
+            ->where('from_user_id','<>' , $user)
+            ->where('read_at',NULL)
+            ->count();
     }
 }

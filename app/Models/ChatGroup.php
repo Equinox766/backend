@@ -43,4 +43,38 @@ class ChatGroup extends Model
     {
         return $this->hasMany(ChatRoom::class, 'chat_group_id');
     }
+
+    public function getLastMessageAttribute()
+    {
+        $chat = $this->Chat()
+            ->sortByDesc('id')
+            ->first();
+
+        return $chat ?
+            $chat->message ?
+                $chat->message : 'Archivo Enviado' :
+            NULL;
+    }
+    public function getLastMessageUserAttribute()
+    {
+        $chat = $this->Chat()
+            ->sortByDesc('id')
+            ->first();
+        return $chat ? $chat->from_user_id : NULL;
+    }
+    public function getLastTimeCreateAtAttribute()
+    {
+        $chat = $this->Chat()
+            ->sortByDesc('id')
+            ->first();
+        return $chat ? $chat->created_at->diffForHumans() : NULL;
+    }
+
+    public function getCountMessages($user): int
+    {
+        return $this->Chat()
+            ->where('from_user_id','<>' , $user)
+            ->where('read_at',NULL)
+            ->count();
+    }
 }
