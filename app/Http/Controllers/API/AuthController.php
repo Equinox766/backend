@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Resources\ProfileUserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,7 +31,7 @@ class AuthController extends Controller
 
         $user = Auth::user();
         return response()->json([
-            'user' => $user,
+            'user' => ProfileUserResource::make($user),
             'authorization' => [
                 'token' => $token,
                 'type' => 'bearer',
@@ -40,16 +41,19 @@ class AuthController extends Controller
 
     public function register(StoreRegisterRequest $request)
     {
-
-        $user = User::create([
+        User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'surname' => $request->surname,
+            'phone' => $request->phone,
+            'birthdate' => now()->format('Y-m-d'),
+            'website' => $request->website,
+            'avatar' => 'users/avatar-default.png',
         ]);
 
         return response()->json([
-            'message' => 'User created successfully',
-            //'user' => $user
+            'message' => 'User created successfully'
         ]);
     }
 
@@ -71,4 +75,5 @@ class AuthController extends Controller
             ]
         ]);
     }
+
 }

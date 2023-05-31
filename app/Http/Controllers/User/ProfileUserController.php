@@ -5,8 +5,10 @@ namespace App\Http\Controllers\User;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\ProfileUserResource;
+use Illuminate\Support\Str;
 
 class ProfileUserController extends Controller
 {
@@ -24,7 +26,9 @@ class ProfileUserController extends Controller
             if($userModel->avatar){
                 Storage::delete($userModel->avatar);
             }
-            $path = Storage::putFile('users', $request->file("imagen"));
+            $extension = $request->file('imagen')->getClientOriginalExtension();
+            $imageName = Str::slug('AVATAR') . '-' . uniqid() . '.' . $extension;
+            $path = $request->file('imagen')->storeAs('users', $imageName);
             $request->request->add(["avatar" => $path]);
         }
         $userModel->update($request->all());
@@ -35,5 +39,23 @@ class ProfileUserController extends Controller
                 'user' => ProfileUserResource::make($userModel)
             ]
         );
+    }
+    public function updatePassword(Request $request)
+    {
+
+//        #Match The Old Password
+//        if(!Hash::check($request->old_password, auth()->user()->password)){
+//            return response()->json("error", "Old Password Doesn't match!");
+//        }
+
+        #Update the new Password
+        User::whereId(auth()->user()->id)->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        return response()->json(
+        [
+            "status" => "Password changed successfully!"
+        ], 200);
     }
 }
