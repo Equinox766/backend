@@ -20,7 +20,7 @@ class RefreshMyChatRoom implements ShouldBroadcastNow
         $this->to_user_id = $to_user_id;
     }
 
-    public function broadcastWith(): array
+    public function broadcastWith()
     {
         $chatroom = ChatRoom::where('first_user', $this->to_user_id)
             ->orWhere('first_user', $this->to_user_id)
@@ -32,8 +32,8 @@ class RefreshMyChatRoom implements ShouldBroadcastNow
             })
         ];
     }
-    public function broadcastOn(): PrivateChannel
+    public function broadcastOn()
     {
-        return new PrivateChannel('chat.refresh.room.'.$this->$to_user_id);
+        return new PrivateChannel('chat.refresh.room.'.$to_user_id);
     }
 }

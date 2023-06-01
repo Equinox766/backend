@@ -46,7 +46,7 @@ class ChatGroup extends Model
 
     public function getLastMessageAttribute()
     {
-        $chat = $this->Chat()
+        $chat = $this->Chats()
             ->sortByDesc('id')
             ->first();
 
@@ -57,14 +57,14 @@ class ChatGroup extends Model
     }
     public function getLastMessageUserAttribute()
     {
-        $chat = $this->Chat()
+        $chat = $this->Chats()
             ->sortByDesc('id')
             ->first();
         return $chat ? $chat->from_user_id : NULL;
     }
     public function getLastTimeCreateAtAttribute()
     {
-        $chat = $this->Chat()
+        $chat = $this->Chats()
             ->sortByDesc('id')
             ->first();
         return $chat ? $chat->created_at->diffForHumans() : NULL;
@@ -72,7 +72,7 @@ class ChatGroup extends Model
 
     public function getCountMessages($user): int
     {
-        return $this->Chat()
+        return $this->Chats()
             ->where('from_user_id','<>' , $user)
             ->where('read_at',NULL)
             ->count();

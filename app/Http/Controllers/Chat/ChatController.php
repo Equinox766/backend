@@ -64,7 +64,7 @@ class ChatController extends Controller
             Chat::where('from_user_id', $request->to_user_id)
                 ->where('chat_room_id', $chatroom->id)
                 ->where('read_at', NULL)
-                ->where(['read_at' => now()]);
+                ->update(['read_at' => now()]);
             $chats = Chat::where('chat_room_id', $chatroom->id)->orderBy('created_at', 'desc')->paginate(10);
 
             $data = [];
@@ -75,7 +75,7 @@ class ChatController extends Controller
             $data['user'] = [
                 'id'        => $to_user->id,
                 'full_name' => $to_user->name.' '.$to_user->surname,
-                'avatar'    => $to_user->avatar ? env('APP_URL').'storage/'.$to_user->avatar : NULL,
+                'avatar'    => $to_user->avatar ? env('APP_URL').'storage/'.$to_user->avatar : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
             ];
             if (count($chats) > 0){
                 foreach ($chats as $key => $chat) {
@@ -94,7 +94,7 @@ class ChatController extends Controller
                     ];
                 }
             }else{
-                $data['messages'][] = [];
+                $data['messages'] = [];
             }
             $data['exist']     = 1;
             $data['last_page'] = $chats->last_page();
@@ -106,9 +106,17 @@ class ChatController extends Controller
                 'last_at'     => now()->format('Y-m-d H:i:s.u'),
                 'uniqd'       => uniqid(),
             ]);
-            $data['messages'][] = [];
-            $data['exist']      = 0;
-            $data['last_page']  = 1;
+            $data['room_id'] = $chatroom->id;
+            $data['chat_uniqd'] = $chatroom->uniqd;
+            $to_user = User::find($request->to_user_id);
+            $data['user'] = [
+                'id'        => $to_user->id,
+                'full_name' => $to_user->name.' '.$to_user->surname,
+                'avatar'    => $to_user->avatar ? env('APP_URL').'storage/'.$to_user->avatar : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+            ];
+            $data['messages']  = [];
+            $data['exist']     = 0;
+            $data['last_page'] = 1;
             return response()->json($data);
         }
 

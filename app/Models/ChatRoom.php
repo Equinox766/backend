@@ -53,14 +53,14 @@ class ChatRoom extends Model
     {
         return $this->belongsTo(ChatGroup::class, 'chat_group_id');
     }
-    public function Chat(): HasMany
+    public function Chats(): HasMany
     {
         return $this->hasMany(Chat::class, 'chat_room_id');
     }
 
     public function getLastMessageAttribute()
     {
-        $chat = $this->Chat()
+        $chat = $this->Chats()
             ->sortByDesc('id')
             ->first();
 
@@ -71,14 +71,14 @@ class ChatRoom extends Model
     }
     public function getLastMessageUserAttribute()
     {
-        $chat = $this->Chat()
+        $chat = $this->Chats()
             ->sortByDesc('id')
             ->first();
         return $chat ? $chat->from_user_id : NULL;
     }
     public function getLastTimeCreateAtAttribute()
     {
-        $chat = $this->Chat()
+        $chat = $this->Chats()
             ->sortByDesc('id')
             ->first();
         return $chat ? $chat->created_at->diffForHumans() : NULL;
@@ -86,7 +86,7 @@ class ChatRoom extends Model
 
     public function getCountMessages($user): int
     {
-        return $this->Chat()
+        return $this->Chats()
             ->where('from_user_id','<>' , $user)
             ->where('read_at',NULL)
             ->count();
