@@ -49,7 +49,7 @@ class AuthController extends Controller
             'phone' => $request->phone,
             'birthdate' => $request->birthdate,
             'website' => $request->website,
-            'avatar' => 'users/avatar-default.png',
+            'avatar' => $request->avatar,
         ]);
 
         return response()->json([

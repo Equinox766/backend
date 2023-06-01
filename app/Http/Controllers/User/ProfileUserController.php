@@ -62,7 +62,7 @@ class ProfileUserController extends Controller
     {
         $users = User::where('id', '<>', auth('api')->user()->id)->orderBy('id', 'desc')->get();
         return response()->json([
-            "Users" => ProfileUserResource::collection($users)
+            "users" => ProfileUserResource::collection($users)
         ]);
     }
 }

@@ -31,18 +31,19 @@ class ChatController extends Controller
         ]);
     }
 
-    public function sendMessageText(Request $request): void
+    public function sendMessageText(Request $request)
     {
         date_default_timezone_set('America/Asuncion');
         $request->request->add(['from_user_id' => auth('api')->user()->id]);
         $chat = Chat::create($request->all());
 
-        $chat->ChatRoom->update(['last_at' => now()->format('Y-m-d H:i:s.u')]);
+        $chat->ChatRoom()->update(["last_at" => now()->format('Y-m-d H:i:s.u')]);
         //Notificar al segundo usuario y hacer un push de mensaje
 
         //Notificar a la sala de chat del usuario
 
         //Notificar a la sala de chat del segundo usuario
+        return response()->json(['success' => 200]);
     }
 
     public function startChat(Request $request): JsonResponse
@@ -51,13 +52,15 @@ class ChatController extends Controller
         if ($request->to_user_id == auth('api')->user()->id) {
             return response()->json(['error' => 'No puedes iniciar un chat contigo mismo']);
         }
-        $isExistRooms = ChatRoom::whereIn('first_user', [$request->to_user_id, auth('api')->user()->id])
+        $isExistRooms = ChatRoom::whereIn('first_user', [$request->to_user_id, auth('api')
+            ->user()->id])
             ->where('first_user', [auth('api')->user()->id, $request->to_user_id,])
             ->orderBy('last_at', 'desc')
             ->count();
         if ($isExistRooms > 0)
         {
-            $chatroom = ChatRoom::whereIn('first_user', [$request->to_user_id, auth('api')->user()->id])
+            $chatroom = ChatRoom::whereIn('first_user', [$request->to_user_id, auth('api')
+                ->user()->id])
                 ->where('first_user', [auth('api')->user()->id, $request->to_user_id,])
                 ->orderBy('last_at', 'desc')
                 ->first();
@@ -65,7 +68,8 @@ class ChatController extends Controller
                 ->where('chat_room_id', $chatroom->id)
                 ->where('read_at', NULL)
                 ->update(['read_at' => now()]);
-            $chats = Chat::where('chat_room_id', $chatroom->id)->orderBy('created_at', 'desc')->paginate(10);
+            $chats = Chat::where('chat_room_id', $chatroom->id)->orderBy('created_at', 'desc')
+                ->paginate(10);
 
             $data = [];
 
@@ -75,7 +79,9 @@ class ChatController extends Controller
             $data['user'] = [
                 'id'        => $to_user->id,
                 'full_name' => $to_user->name.' '.$to_user->surname,
-                'avatar'    => $to_user->avatar ? env('APP_URL').'storage/'.$to_user->avatar : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                'avatar'    => $to_user->avatar ?
+                    env('APP_URL').'storage/'.$to_user->avatar :
+                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
             ];
             if (count($chats) > 0){
                 foreach ($chats as $key => $chat) {
@@ -84,7 +90,9 @@ class ChatController extends Controller
                         'sender'     => [
                             'id'       => $chat->FromUser->id,
                             'fullname' => $chat->FromUser->name.' '.$chat->FromUser->surname,
-                            'avatar'   => $chat->FromUser->avatar ? env('APP_URL').'storage/'.$chat->FromUser->avatar : NULL,
+                            'avatar'   => $chat->FromUser->avatar ?
+                                env('APP_URL').'storage/'.$chat->FromUser->avatar :
+                                'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
                         ],
                         'message'    => $chat->message,
                         //Files
@@ -97,7 +105,7 @@ class ChatController extends Controller
                 $data['messages'] = [];
             }
             $data['exist']     = 1;
-            $data['last_page'] = $chats->last_page();
+            $data['last_page'] = $chats->lastPage();
             return response()->json($data);
         } else {
             $chatroom = ChatRoom::create([
@@ -112,7 +120,9 @@ class ChatController extends Controller
             $data['user'] = [
                 'id'        => $to_user->id,
                 'full_name' => $to_user->name.' '.$to_user->surname,
-                'avatar'    => $to_user->avatar ? env('APP_URL').'storage/'.$to_user->avatar : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                'avatar'    => $to_user->avatar ?
+                    env('APP_URL').'storage/'.$to_user->avatar :
+                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
             ];
             $data['messages']  = [];
             $data['exist']     = 0;

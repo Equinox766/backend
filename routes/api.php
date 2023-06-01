@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\Chat\ChatController;
 use App\Http\Controllers\User\ProfileUserController;
 
 /*
@@ -26,4 +27,10 @@ Route::group(['prefix' => 'user'], function ($router) {
     Route::post('/profile-user', [ProfileUserController::class, 'profileUpdate']);
     Route::post('/change-password', [ProfileUserController::class, 'updatePassword']);
     Route::get('/contact-user', [ProfileUserController::class, 'contactUsers']);
+});
+
+Route::group(['prefix' => 'chat'], function ($router) {
+    Route::post('/start-chat', [ChatController::class, 'startChat']);
+    Route::post('/list-chat-room', [ChatController::class, 'listMyChat']);
+    Route::post('/send-message', [ChatController::class, 'sendMessageText']);
 });
