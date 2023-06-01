@@ -21,8 +21,12 @@ class ProfileUserResource extends JsonResource
             'address'   => $this->resource->address,
             'surname'   => $this->resource->surname,
             'website'   => $this->resource->website,
-            'birthdate' => $this->resource->birthdate->format('Y-m-d'),
-            'avatar'    => env("APP_URL")."storage/".$this->resource->avatar,
+            'birthdate' => $this->resource->birthdate ?
+                $this->resource->birthdate->format('Y-m-d') :
+                NULL,
+            'avatar'    => $this->resource->avatar ?
+                env("APP_URL")."storage/".$this->resource->avatar :
+                'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
         ];
     }
 }

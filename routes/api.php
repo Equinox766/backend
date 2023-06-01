@@ -25,4 +25,5 @@ Route::controller(AuthController::class)->group(function () {
 Route::group(['prefix' => 'user'], function ($router) {
     Route::post('/profile-user', [ProfileUserController::class, 'profileUpdate']);
     Route::post('/change-password', [ProfileUserController::class, 'updatePassword']);
+    Route::get('/contact-user', [ProfileUserController::class, 'contactUsers']);
 });

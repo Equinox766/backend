@@ -47,7 +47,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'surname' => $request->surname,
             'phone' => $request->phone,
-            'birthdate' => now()->format('Y-m-d'),
+            'birthdate' => $request->birthdate,
             'website' => $request->website,
             'avatar' => 'users/avatar-default.png',
         ]);

@@ -58,4 +58,11 @@ class ProfileUserController extends Controller
             "status" => "Password changed successfully!"
         ], 200);
     }
+    public function contactUsers()
+    {
+        $users = User::where('id', '<>', auth('api')->user()->id)->orderBy('id', 'desc')->get();
+        return response()->json([
+            "Users" => ProfileUserResource::collection($users)
+        ]);
+    }
 }
